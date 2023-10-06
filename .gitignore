@@ -10,6 +10,16 @@
 *.userosscache
 *.sln.docstates
 
+# Unuse
+/Library
+/Logs
+/obj
+/Packages
+/ProjectSettings
+/Temp
+/UserSettings
+/.plastic
+
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
 
