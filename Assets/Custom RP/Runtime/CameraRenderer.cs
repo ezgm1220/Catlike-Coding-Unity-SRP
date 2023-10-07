@@ -7,6 +7,7 @@ public partial class CameraRenderer
     const string bufferName = "Render Camera";
 
     static ShaderTagId unlitShaderTagId = new ShaderTagId("SRPDefaultUnlit");
+    static ShaderTagId litShaderTagId = new ShaderTagId("CustomLit");
 
     CommandBuffer buffer = new CommandBuffer
     {
@@ -54,6 +55,7 @@ public partial class CameraRenderer
             enableDynamicBatching = useDynamicBatching,
             enableInstancing = useGPUInstancing
         };
+        drawingSettings.SetShaderPassName(1, litShaderTagId);
 
         //决定过滤哪些Visible Objects的配置，包括支持的RenderQueue等
         var filteringSettings = new FilteringSettings(RenderQueueRange.opaque);
