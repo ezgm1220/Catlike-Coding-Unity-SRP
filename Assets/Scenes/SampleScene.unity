@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.18028378, g: 0.22571412, b: 0.30692285, a: 1}
+  m_IndirectSpecularColor: {r: 0.174341, g: 0.21803465, b: 0.30025935, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -157,6 +157,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   baseColor: {r: 0.22352941, g: 0.7058824, b: 0.5020047, a: 1}
   alphaCutoff: 0.5
+  metallic: 0
+  smoothness: 0.5
 --- !u!65 &52959168
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -363,6 +365,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   baseColor: {r: 1, g: 1, b: 1, a: 1}
   alphaCutoff: 0.702
+  metallic: 0
+  smoothness: 0.5
 --- !u!1 &705507993
 GameObject:
   m_ObjectHideFlags: 0
@@ -391,7 +395,7 @@ Light:
   serializedVersion: 10
   m_Type: 1
   m_Shape: 0
-  m_Color: {r: 1, g: 0.95686275, b: 0.8392157, a: 1}
+  m_Color: {r: 0.8773585, g: 0.8461577, b: 0.5835262, a: 1}
   m_Intensity: 1
   m_Range: 10
   m_SpotAngle: 30
@@ -450,13 +454,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 705507993}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.40821788, y: -0.23456968, z: 0.10938163, w: 0.8754261}
+  m_LocalRotation: {x: 0.58008534, y: -0.20694865, z: 0.15543339, w: 0.77234304}
   m_LocalPosition: {x: 0, y: 3, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
+  m_LocalEulerAnglesHint: {x: 73.818, y: -30, z: 0}
 --- !u!1 &963194225
 GameObject:
   m_ObjectHideFlags: 0
@@ -582,7 +586,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   baseColor: {r: 1, g: 1, b: 1, a: 1}
-  alphaCutoff: 0.5
+  alphaCutoff: 0.116
+  metallic: 0
+  smoothness: 0.64
 --- !u!135 &1039224074
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -662,13 +668,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1039224072}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.25828987, y: 2.4671686, z: 6.041}
+  m_LocalRotation: {x: -0.42389166, y: -0, z: -0, w: 0.90571296}
+  m_LocalPosition: {x: -0.25828987, y: 1.497, z: 2.631}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: -50.161, y: 0, z: 0}
 --- !u!1 &1160698384
 GameObject:
   m_ObjectHideFlags: 0
@@ -703,6 +709,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   baseColor: {r: 0.22352941, g: 0.7058824, b: 0.6285474, a: 1}
   alphaCutoff: 0.5
+  metallic: 0
+  smoothness: 0.5
 --- !u!65 &1160698386
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -823,6 +831,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   baseColor: {r: 0.7058824, g: 0.22352941, b: 0.63745373, a: 1}
   alphaCutoff: 0.752
+  metallic: 0
+  smoothness: 0.5
 --- !u!65 &1203810433
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -1029,6 +1039,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   baseColor: {r: 0.33572665, g: 0.8301887, b: 0.27020293, a: 1}
   alphaCutoff: 0.5
+  metallic: 0
+  smoothness: 0.5
 --- !u!1 &1389675775
 GameObject:
   m_ObjectHideFlags: 0
@@ -1149,6 +1161,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   baseColor: {r: 0.22352941, g: 0.30441025, b: 0.7058824, a: 1}
   alphaCutoff: 0.706
+  metallic: 0
+  smoothness: 0.5
 --- !u!1 &1400665400
 GameObject:
   m_ObjectHideFlags: 0
@@ -1179,7 +1193,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
-  material: {fileID: 2100000, guid: 31f8df55140687745bd129568057a68b, type: 2}
+  material: {fileID: 2100000, guid: ef506eac9c4d3d745acc5263f42ab77e, type: 2}
 --- !u!4 &1400665402
 Transform:
   m_ObjectHideFlags: 0

@@ -3,7 +3,7 @@
 
 #define MAX_DIRECTIONAL_LIGHT_COUNT 4
 
-CBUFFER_START(_CustomLight)
+CBUFFER_START(_CustomLight)// 存放光源信息
 	//float4 _DirectionalLightColor;
 	//float4 _DirectionalLightDirection;
 	int _DirectionalLightCount;
