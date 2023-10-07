@@ -20,6 +20,8 @@ public partial class CameraRenderer
 
     CullingResults cullingResults;// ÌÞ³ý½á¹û
 
+    Lighting lighting = new Lighting();// Lighting ÊµÀý
+
     public void Render(ScriptableRenderContext context, Camera camera, bool useDynamicBatching, bool useGPUInstancing)
     {
         this.context = context;
@@ -33,6 +35,7 @@ public partial class CameraRenderer
         }
 
         Setup();
+        lighting.Setup(context, cullingResults);
         DrawVisibleGeometry(useDynamicBatching, useGPUInstancing);
         DrawUnsupportedShaders();
         DrawGizmos();

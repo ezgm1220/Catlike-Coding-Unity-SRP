@@ -58,6 +58,7 @@
     <Analyzer Include="D:\UnityEditor\2022.3.6f1c1\Editor\Data\Tools\Unity.SourceGenerators\Unity.Properties.SourceGenerator.dll" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\Custom RP\Runtime\Lighting.cs" />
     <Compile Include="Assets\Custom RP\Examples\MeshBall.cs" />
     <Compile Include="Assets\Custom RP\Runtime\CustomRenderPipeline.cs" />
     <Compile Include="Assets\Custom RP\Runtime\CameraRenderer.cs" />
@@ -74,6 +75,7 @@
     <None Include="Assets\TextMesh Pro\Shaders\TMPro_Mobile.cginc" />
     <None Include="Assets\Custom RP\ShaderLibrary\Common.hlsl" />
     <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF SSD.shader" />
+    <None Include="Assets\Custom RP\ShaderLibrary\BRDF.hlsl" />
     <None Include="Assets\Custom RP\Shaders\UnlitPass.hlsl" />
     <None Include="Assets\Custom RP\Shaders\Lit.shader" />
     <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF-Surface-Mobile.shader" />
@@ -89,6 +91,7 @@
     <None Include="Assets\TextMesh Pro\Shaders\TMPro_Surface.cginc" />
     <None Include="Assets\TextMesh Pro\Resources\LineBreaking Following Characters.txt" />
     <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF-Mobile Masking.shader" />
+    <None Include="Assets\Custom RP\ShaderLibrary\Light.hlsl" />
     <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF Overlay.shader" />
     <None Include="Assets\TextMesh Pro\Shaders\TMP_Bitmap-Mobile.shader" />
     <None Include="Assets\TextMesh Pro\Fonts\LiberationSans - OFL.txt" />

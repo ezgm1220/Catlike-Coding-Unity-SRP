@@ -8,10 +8,12 @@ public class CustomRenderPipeline : RenderPipeline
 
     public CustomRenderPipeline(bool useDynamicBatching, bool useGPUInstancing, bool useSRPBatcher)
     {
+        // 设置对应的渲染状态
         this.useDynamicBatching = useDynamicBatching;
         this.useGPUInstancing = useGPUInstancing;
         GraphicsSettings.useScriptableRenderPipelineBatching = useSRPBatcher;
-        // 设置对应的渲染状态
+        // 设置为线性空间
+        GraphicsSettings.lightsUseLinearIntensity = true;
     }
 
     CameraRenderer renderer = new CameraRenderer();

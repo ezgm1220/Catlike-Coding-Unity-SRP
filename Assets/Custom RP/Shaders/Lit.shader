@@ -16,7 +16,7 @@ Shader "Custom/Lit"
 
 			HLSLPROGRAM
 			#pragma target 3.5
-			#pragma shader_feature _CLIPPING
+			//#pragma shader_feature _CLIPPING
 			#pragma shader_feature _PREMULTIPLY_ALPHA
 			#pragma multi_compile_instancing
 			#pragma vertex LitPassVertex
