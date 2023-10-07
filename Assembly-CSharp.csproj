@@ -60,8 +60,10 @@
   <ItemGroup>
     <Compile Include="Assets\Custom RP\Runtime\Lighting.cs" />
     <Compile Include="Assets\Custom RP\Examples\MeshBall.cs" />
+    <Compile Include="Assets\Custom RP\Runtime\ShadowSettings.cs" />
     <Compile Include="Assets\Custom RP\Runtime\CustomRenderPipeline.cs" />
     <Compile Include="Assets\Custom RP\Runtime\CameraRenderer.cs" />
+    <Compile Include="Assets\Custom RP\Runtime\Shadows.cs" />
     <Compile Include="Assets\Custom RP\Runtime\CameraRenderer.Editor.cs" />
     <Compile Include="Assets\Custom RP\Examples\PerObjectMaterialProperties.cs" />
     <Compile Include="Assets\Custom RP\Runtime\CustomRenderPipelineAsset.cs" />
@@ -85,6 +87,7 @@
     <None Include="Assets\TextMesh Pro\Shaders\TMP_Bitmap-Custom-Atlas.shader" />
     <None Include="Assets\Custom RP\ShaderLibrary\UnityInput.hlsl" />
     <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF.shader" />
+    <None Include="Assets\Custom RP\Shaders\ShadowCasterPass.hlsl" />
     <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF-Mobile SSD.shader" />
     <None Include="Assets\TextMesh Pro\Resources\LineBreaking Leading Characters.txt" />
     <None Include="Assets\TextMesh Pro\Shaders\TMPro_Properties.cginc" />
