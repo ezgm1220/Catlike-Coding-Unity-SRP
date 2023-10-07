@@ -59,6 +59,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\Custom RP\Runtime\CustomRenderPipeline.cs" />
+    <Compile Include="Assets\Custom RP\Examples\MeshBall.cs" />
+    <Compile Include="Assets\Custom RP\Examples\PerObjectMaterialProperties.cs" />
     <Compile Include="Assets\Custom RP\Runtime\CustomRenderPipelineAsset.cs" />
     <Compile Include="Assets\Custom RP\Runtime\CameraRenderer.cs" />
     <Compile Include="Assets\Custom RP\Runtime\CameraRenderer.Editor.cs" />
