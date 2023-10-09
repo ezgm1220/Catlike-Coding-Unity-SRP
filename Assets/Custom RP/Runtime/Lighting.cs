@@ -18,11 +18,13 @@ public class Lighting
         //dirLightDirectionId = Shader.PropertyToID("_DirectionalLightDirection");
         dirLightCountId = Shader.PropertyToID("_DirectionalLightCount"),
         dirLightColorsId = Shader.PropertyToID("_DirectionalLightColors"),
-        dirLightDirectionsId = Shader.PropertyToID("_DirectionalLightDirections");
+        dirLightDirectionsId = Shader.PropertyToID("_DirectionalLightDirections"),
+        dirLightShadowDataId = Shader.PropertyToID("_DirectionalLightShadowData");
 
     static Vector4[]
         dirLightColors = new Vector4[maxDirLightCount],
-        dirLightDirections = new Vector4[maxDirLightCount];
+        dirLightDirections = new Vector4[maxDirLightCount],
+        dirLightShadowData = new Vector4[maxDirLightCount];
 
     Shadows shadows = new Shadows();
 
@@ -53,9 +55,11 @@ public class Lighting
             }
         }
 
+        // 设置全局信息
         buffer.SetGlobalInt(dirLightCountId, dirLightCount);
         buffer.SetGlobalVectorArray(dirLightColorsId, dirLightColors);
         buffer.SetGlobalVectorArray(dirLightDirectionsId, dirLightDirections);
+        buffer.SetGlobalVectorArray(dirLightShadowDataId, dirLightShadowData);  
     }
 
     public void Cleanup()
@@ -81,6 +85,6 @@ public class Lighting
     {
         dirLightColors[index] = visibleLight.finalColor;
         dirLightDirections[index] = -visibleLight.localToWorldMatrix.GetColumn(2);
-        shadows.ReserveDirectionalShadows(visibleLight.light, index);
+        dirLightShadowData[index] = shadows.ReserveDirectionalShadows(visibleLight.light, index);
     }
 }

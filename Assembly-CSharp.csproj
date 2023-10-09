@@ -81,6 +81,7 @@
     <None Include="Assets\Custom RP\Shaders\UnlitPass.hlsl" />
     <None Include="Assets\Custom RP\Shaders\Lit.shader" />
     <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF-Surface-Mobile.shader" />
+    <None Include="Assets\Custom RP\ShaderLibrary\Shadows.hlsl" />
     <None Include="Assets\Custom RP\Shaders\Unlit.shader" />
     <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF-Surface.shader" />
     <None Include="Assets\TextMesh Pro\Sprites\EmojiOne Attribution.txt" />
