@@ -20,6 +20,12 @@ public class Shadows
 
     ShadowSettings settings;
 
+    static string[] directionalFilterKeywords = {
+        "_DIRECTIONAL_PCF3",
+        "_DIRECTIONAL_PCF5",
+        "_DIRECTIONAL_PCF7",
+    };
+
     struct ShadowedDirectionalLight
     {
         public int visibleLightIndex;
@@ -38,6 +44,7 @@ public class Shadows
         cascadeCountId = Shader.PropertyToID("_CascadeCount"),
         cascadeCullingSpheresId = Shader.PropertyToID("_CascadeCullingSpheres"),
         cascadeDataId = Shader.PropertyToID("_CascadeData"),// 传递级联数据
+        shadowAtlasSizeId = Shader.PropertyToID("_ShadowAtlasSize"),// 阴影尺寸
         //shadowDistanceId = Shader.PropertyToID("_ShadowDistance");
         // 使用渐变距离
         shadowDistanceFadeId = Shader.PropertyToID("_ShadowDistanceFade");
@@ -133,8 +140,28 @@ public class Shadows
             )
         );
 
+        SetKeywords();
+        buffer.SetGlobalVector(
+            shadowAtlasSizeId, new Vector4(atlasSize, 1f / atlasSize)
+        );
         buffer.EndSample(bufferName);
         ExecuteBuffer();
+    }
+
+    void SetKeywords()
+    {
+        int enabledIndex = (int)settings.directional.filter - 1;
+        for (int i = 0; i < directionalFilterKeywords.Length; i++)
+        {
+            if (i == enabledIndex)
+            {
+                buffer.EnableShaderKeyword(directionalFilterKeywords[i]);
+            }
+            else
+            {
+                buffer.DisableShaderKeyword(directionalFilterKeywords[i]);
+            }
+        }
     }
 
     Matrix4x4 ConvertToAtlasMatrix(Matrix4x4 m, Vector2 offset, int split)
@@ -179,14 +206,19 @@ public class Shadows
     void SetCascadeData(int index, Vector4 cullingSphere, float tileSize)
     {
         float texelSize = 2f * cullingSphere.w / tileSize;
+        float filterSize = texelSize * ((float)settings.directional.filter + 1f);
+
         cullingSphere.w *= cullingSphere.w;
         cascadeCullingSpheres[index] = cullingSphere;
         //cascadeData[index].x = 1f / cullingSphere.w;
         cascadeData[index] = new Vector4(
             1f / cullingSphere.w,
-            texelSize * 1.4142136f
+            filterSize * 1.4142136f
         );
+
+        cullingSphere.w -= filterSize;
         cullingSphere.w *= cullingSphere.w;
+
         cascadeCullingSpheres[index] = cullingSphere;
     }
 
