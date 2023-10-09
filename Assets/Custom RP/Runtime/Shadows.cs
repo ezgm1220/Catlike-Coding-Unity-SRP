@@ -34,7 +34,10 @@ public class Shadows
         dirShadowAtlasId = Shader.PropertyToID("_DirectionalShadowAtlas"),
         dirShadowMatricesId = Shader.PropertyToID("_DirectionalShadowMatrices"),
         cascadeCountId = Shader.PropertyToID("_CascadeCount"),
-        cascadeCullingSpheresId = Shader.PropertyToID("_CascadeCullingSpheres");
+        cascadeCullingSpheresId = Shader.PropertyToID("_CascadeCullingSpheres"),
+        //shadowDistanceId = Shader.PropertyToID("_ShadowDistance");
+        // 使用渐变距离
+        shadowDistanceFadeId = Shader.PropertyToID("_ShadowDistanceFade");
 
     static Vector4[] cascadeCullingSpheres = new Vector4[maxCascades];
 
@@ -112,6 +115,15 @@ public class Shadows
 
         // 设置全局矩阵数组
         buffer.SetGlobalMatrixArray(dirShadowMatricesId, dirShadowMatrices);
+        // 设置最大距离 在级联间平滑过渡
+        //buffer.SetGlobalFloat(shadowDistanceId, settings.maxDistance);
+        float f = 1f - settings.directional.cascadeFade;
+        buffer.SetGlobalVector(
+            shadowDistanceFadeId, new Vector4(
+                1f / settings.maxDistance, 1f / settings.distanceFade,
+                1f / (1f - f * f)
+            )
+        );
 
         buffer.EndSample(bufferName);
         ExecuteBuffer();
