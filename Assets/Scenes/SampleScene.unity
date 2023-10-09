@@ -546,8 +546,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 963194225}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.073853426, y: -0.9232708, z: 0.3026561, w: -0.22475745}
-  m_LocalPosition: {x: -5.3813157, y: 4.406975, z: 9.968782}
+  m_LocalRotation: {x: 0.0021248348, y: 0.8924249, z: -0.0043113083, w: 0.45117044}
+  m_LocalPosition: {x: -6.9159184, y: 2.3642852, z: 8.997989}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -586,8 +586,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   baseColor: {r: 1, g: 1, b: 1, a: 1}
-  alphaCutoff: 0.116
-  metallic: 0
+  alphaCutoff: 0.427
+  metallic: 0.062
   smoothness: 0.64
 --- !u!135 &1039224074
 SphereCollider:
@@ -1241,7 +1241,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: ef506eac9c4d3d745acc5263f42ab77e, type: 2}
+  - {fileID: 2100000, guid: 5cbf45138aba6bd4a80806b59e75e5eb, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

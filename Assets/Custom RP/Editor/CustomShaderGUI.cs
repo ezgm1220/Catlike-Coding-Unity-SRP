@@ -38,6 +38,23 @@ public class CustomShaderGUI : ShaderGUI
         set => SetProperty("_ZWrite", value ? 1f : 0f);
     }
 
+    enum ShadowMode
+    {
+        On, Clip, Dither, Off
+    }
+
+    ShadowMode Shadows
+    {
+        set
+        {
+            if (SetProperty("_Shadows", (float)value))
+            {
+                SetKeyword("_SHADOWS_CLIP", value == ShadowMode.Clip);
+                SetKeyword("_SHADOWS_DITHER", value == ShadowMode.Dither);
+            }
+        }
+    }
+
     RenderQueue RenderQueue
     {
         set
@@ -53,6 +70,7 @@ public class CustomShaderGUI : ShaderGUI
         MaterialEditor materialEditor, MaterialProperty[] properties
     )
     {
+        EditorGUI.BeginChangeCheck();
         base.OnGUI(materialEditor, properties);
         editor = materialEditor;
         materials = materialEditor.targets;
@@ -67,6 +85,10 @@ public class CustomShaderGUI : ShaderGUI
             FadePreset();
             TransparentPreset();
         }
+        if (EditorGUI.EndChangeCheck())
+        {
+            SetShadowCasterPass();
+        }
     }
 
     void OpaquePreset()
@@ -74,6 +96,7 @@ public class CustomShaderGUI : ShaderGUI
         if (PresetButton("Opaque"))
         {
             Clipping = false;
+            Shadows = ShadowMode.On;
             PremultiplyAlpha = false;
             SrcBlend = BlendMode.One;
             DstBlend = BlendMode.Zero;
@@ -87,6 +110,7 @@ public class CustomShaderGUI : ShaderGUI
         if (PresetButton("Clip"))
         {
             Clipping = true;
+            Shadows = ShadowMode.Clip;
             PremultiplyAlpha = false;
             SrcBlend = BlendMode.One;
             DstBlend = BlendMode.Zero;
@@ -100,6 +124,7 @@ public class CustomShaderGUI : ShaderGUI
         if (PresetButton("Fade"))
         {
             Clipping = false;
+            Shadows = ShadowMode.Dither;
             PremultiplyAlpha = false;
             SrcBlend = BlendMode.SrcAlpha;
             DstBlend = BlendMode.OneMinusSrcAlpha;
@@ -113,6 +138,7 @@ public class CustomShaderGUI : ShaderGUI
         if (HasPremultiplyAlpha && PresetButton("Transparent"))
         {
             Clipping = false;
+            Shadows = ShadowMode.Dither;
             PremultiplyAlpha = true;
             SrcBlend = BlendMode.One;
             DstBlend = BlendMode.OneMinusSrcAlpha;
@@ -168,6 +194,20 @@ public class CustomShaderGUI : ShaderGUI
             {
                 m.DisableKeyword(keyword);
             }
+        }
+    }
+
+    void SetShadowCasterPass()
+    {
+        MaterialProperty shadows = FindProperty("_Shadows", properties, false);
+        if (shadows == null || shadows.hasMixedValue)
+        {
+            return;
+        }
+        bool enabled = shadows.floatValue < (float)ShadowMode.Off;
+        foreach (Material m in materials)
+        {
+            m.SetShaderPassEnabled("ShadowCaster", enabled);
         }
     }
 }
