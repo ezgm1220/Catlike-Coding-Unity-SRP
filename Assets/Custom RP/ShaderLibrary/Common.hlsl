@@ -10,7 +10,7 @@
 #define UNITY_MATRIX_V unity_MatrixV
 #define UNITY_MATRIX_I_V unity_MatrixInvV
 #define UNITY_MATRIX_VP unity_MatrixVP
-#define UNITY_PREV_MATRIX_M unity_prev_MatrixM
+#define UNITY_PREV_MATRIX_M unity_prev_MatrixM 
 #define UNITY_PREV_MATRIX_I_M unity_prev_MatrixIM
 #define UNITY_MATRIX_P glstate_matrix_projection
 
