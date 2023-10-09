@@ -81,9 +81,13 @@ float GetDirectionalShadowAttenuation (
 	float3 normalBias = surfaceWS.normal *
 		(directional.normalBias * _CascadeData[global.cascadeIndex].y);
 
+	//float3 positionSTS = mul(
+	//	_DirectionalShadowMatrices[directional.tileIndex],
+	//	float4(surfaceWS.position + normalBias, 1.0)
+	//).xyz;
 	float3 positionSTS = mul(
 		_DirectionalShadowMatrices[directional.tileIndex],
-		float4(surfaceWS.position + normalBias, 1.0)
+		float4(surfaceWS.position, 1.0)
 	).xyz;
 
 	float shadow = SampleDirectionalShadowAtlas(positionSTS);
