@@ -235,6 +235,9 @@ public class Shadows
         int tileOffset = index * cascadeCount;
         Vector3 ratios = settings.directional.CascadeRatios;
 
+        float cullingFactor =
+            Mathf.Max(0f, 0.8f - settings.directional.cascadeFade);
+
         for (int i = 0; i < cascadeCount; i++)
         {
             cullingResults.ComputeDirectionalShadowMatricesAndCullingPrimitives(
@@ -243,6 +246,7 @@ public class Shadows
                 out Matrix4x4 projectionMatrix, out ShadowSplitData splitData
             );
 
+            splitData.shadowCascadeBlendCullingFactor = cullingFactor;// 剔除无用阴影投射?(culling bias)
             shadowSettings.splitData = splitData;
 
             if (index == 0)// 记录记录级联数据,只记录一个光源的即可(因为公用)
