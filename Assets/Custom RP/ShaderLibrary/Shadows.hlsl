@@ -2,11 +2,13 @@
 #define CUSTOM_SHADOWS_INCLUDED
 
 #define MAX_SHADOWED_DIRECTIONAL_LIGHT_COUNT 4
+#define MAX_CASCADE_COUNT 4
 
 CBUFFER_START(_CustomShadows)
-	float4x4 _DirectionalShadowMatrices[MAX_SHADOWED_DIRECTIONAL_LIGHT_COUNT];
+	int _CascadeCount;
+	float4 _CascadeCullingSpheres[MAX_CASCADE_COUNT];
+	float4x4 _DirectionalShadowMatrices[MAX_SHADOWED_DIRECTIONAL_LIGHT_COUNT * MAX_CASCADE_COUNT];
 CBUFFER_END
-
 
 TEXTURE2D_SHADOW(_DirectionalShadowAtlas);
 #define SHADOW_SAMPLER sampler_linear_clamp_compare
@@ -16,6 +18,35 @@ struct DirectionalShadowData {
 	float strength; // 强度
 	int tileIndex;	// 索引id
 };
+
+struct ShadowData {
+	int cascadeIndex;
+	float strength; // 可以处理超出级联范围的情况
+};
+
+ShadowData GetShadowData (Surface surfaceWS) {
+	ShadowData data;
+
+	data.strength = 1.0;
+
+	int i;
+	for (i = 0; i < _CascadeCount; i++) {
+		float4 sphere = _CascadeCullingSpheres[i];
+		float distanceSqr = DistanceSquared(surfaceWS.position, sphere.xyz);
+		if (distanceSqr < sphere.w) {
+			break;
+		}
+	}
+
+	if (i == _CascadeCount) {
+		data.strength = 0.0;
+	}
+
+	data.cascadeIndex = i;
+	return data;
+}
+
+
 
 // 通过SAMPLE_TEXTURE2D_SHADOW宏对阴影图集进行采样
 float SampleDirectionalShadowAtlas (float3 positionSTS) {

@@ -6,8 +6,8 @@ public class Shadows
 
     const string bufferName = "Shadows";
 
-    // 限制阴影灯光数量
-    const int maxShadowedDirectionalLightCount = 4;
+    // 限制阴影灯光数量,级联的级数
+    const int maxShadowedDirectionalLightCount = 4, maxCascades = 4;
 
     CommandBuffer buffer = new CommandBuffer
     {
@@ -16,7 +16,7 @@ public class Shadows
 
     ScriptableRenderContext context;
 
-    CullingResults cullingResults;
+    CullingResults cullingResults;// 裁剪信息
 
     ShadowSettings settings;
 
@@ -32,7 +32,11 @@ public class Shadows
 
     static int
         dirShadowAtlasId = Shader.PropertyToID("_DirectionalShadowAtlas"),
-        dirShadowMatricesId = Shader.PropertyToID("_DirectionalShadowMatrices");
+        dirShadowMatricesId = Shader.PropertyToID("_DirectionalShadowMatrices"),
+        cascadeCountId = Shader.PropertyToID("_CascadeCount"),
+        cascadeCullingSpheresId = Shader.PropertyToID("_CascadeCullingSpheres");
+
+    static Vector4[] cascadeCullingSpheres = new Vector4[maxCascades];
 
     static Matrix4x4[]// 阴影的变换矩阵
         dirShadowMatrices = new Matrix4x4[maxShadowedDirectionalLightCount];
@@ -49,7 +53,8 @@ public class Shadows
                     visibleLightIndex = visibleLightIndex
                 };
             return new Vector2(
-                light.shadowStrength, ShadowedDirectionalLightCount++
+                light.shadowStrength,
+                settings.directional.cascadeCount * ShadowedDirectionalLightCount++
             );
         }
         return Vector2.zero;
@@ -91,13 +96,19 @@ public class Shadows
         buffer.BeginSample(bufferName);
         ExecuteBuffer();
 
-        int split = ShadowedDirectionalLightCount <= 1 ? 1 : 2;
+        int tiles = ShadowedDirectionalLightCount * settings.directional.cascadeCount;
+        int split = tiles <= 1 ? 1 : tiles <= 4 ? 2 : 4;
         int tileSize = atlasSize / split;
 
         for (int i = 0; i < ShadowedDirectionalLightCount; i++)
         {
             RenderDirectionalShadows(i, split, tileSize);
         }
+
+        buffer.SetGlobalInt(cascadeCountId, settings.directional.cascadeCount);
+        buffer.SetGlobalVectorArray(
+            cascadeCullingSpheresId, cascadeCullingSpheres
+        );
 
         // 设置全局矩阵数组
         buffer.SetGlobalMatrixArray(dirShadowMatricesId, dirShadowMatrices);
@@ -145,6 +156,7 @@ public class Shadows
         return offset;
     }
 
+    // 渲染阴影
     void RenderDirectionalShadows(int index, int split, int tileSize)
     {
         ShadowedDirectionalLight light = ShadowedDirectionalLights[index];
@@ -153,21 +165,36 @@ public class Shadows
             BatchCullingProjectionType.Orthographic
         );
 
-        cullingResults.ComputeDirectionalShadowMatricesAndCullingPrimitives(
-            light.visibleLightIndex, 0, 1, Vector3.zero, tileSize, 0f,
-            out Matrix4x4 viewMatrix, out Matrix4x4 projectionMatrix,
-            out ShadowSplitData splitData
-        );
-        shadowSettings.splitData = splitData;
-        //SetTileViewport(index, split, tileSize);
-        dirShadowMatrices[index] = ConvertToAtlasMatrix(
-            projectionMatrix * viewMatrix,
-            SetTileViewport(index, split, tileSize), split
-        );
-        buffer.SetViewProjectionMatrices(viewMatrix, projectionMatrix);
+        int cascadeCount = settings.directional.cascadeCount;
+        int tileOffset = index * cascadeCount;
+        Vector3 ratios = settings.directional.CascadeRatios;
 
-        ExecuteBuffer();
-        context.DrawShadows(ref shadowSettings);
+        for (int i = 0; i < cascadeCount; i++)
+        {
+            cullingResults.ComputeDirectionalShadowMatricesAndCullingPrimitives(
+                light.visibleLightIndex, i, cascadeCount, ratios, tileSize, 0f,
+                out Matrix4x4 viewMatrix, out Matrix4x4 projectionMatrix,
+                out ShadowSplitData splitData
+            );
+
+            shadowSettings.splitData = splitData;
+
+            if (index == 0)// 记录记录级联剔除球,只记录一个光源的即可(因为公用)
+            {
+                Vector4 cullingSphere = splitData.cullingSphere;
+                cullingSphere.w *= cullingSphere.w;
+                cascadeCullingSpheres[i] = cullingSphere;
+            }
+
+            int tileIndex = tileOffset + i;
+            dirShadowMatrices[tileIndex] = ConvertToAtlasMatrix(
+                projectionMatrix * viewMatrix,
+                SetTileViewport(tileIndex, split, tileSize), split
+            );
+            buffer.SetViewProjectionMatrices(viewMatrix, projectionMatrix);
+            ExecuteBuffer();
+            context.DrawShadows(ref shadowSettings);
+        }
 
     }
 

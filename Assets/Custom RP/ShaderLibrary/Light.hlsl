@@ -29,19 +29,23 @@ Light GetDirectionalLight (int index) {
 	return light;
 }
 
-DirectionalShadowData GetDirectionalShadowData (int lightIndex) { // 获取定向阴影数据
+DirectionalShadowData GetDirectionalShadowData (// 获取定向阴影数据
+	int lightIndex, ShadowData shadowData
+) {
 	DirectionalShadowData data;
-	data.strength = _DirectionalLightShadowData[lightIndex].x;
-	data.tileIndex = _DirectionalLightShadowData[lightIndex].y;
+	data.strength = _DirectionalLightShadowData[lightIndex].x * shadowData.strength;
+	data.tileIndex =
+		_DirectionalLightShadowData[lightIndex].y + shadowData.cascadeIndex;
 	return data;
 }
 
-Light GetDirectionalLight (int index, Surface surfaceWS) {
+Light GetDirectionalLight (int index, Surface surfaceWS, ShadowData shadowData) {
 	Light light;
 	light.color = _DirectionalLightColors[index].rgb;
 	light.direction = _DirectionalLightDirections[index].xyz;
-	DirectionalShadowData shadowData = GetDirectionalShadowData(index);
-	light.attenuation = GetDirectionalShadowAttenuation(shadowData, surfaceWS);
+	DirectionalShadowData dirShadowData = GetDirectionalShadowData(index, shadowData);
+	light.attenuation = GetDirectionalShadowAttenuation(dirShadowData, surfaceWS);
+	//light.attenuation = shadowData.cascadeIndex * 0.25;// 显示级联
 	return light;
 }
 
