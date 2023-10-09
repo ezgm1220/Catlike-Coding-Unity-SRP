@@ -26,6 +26,11 @@ public class Shadows
         "_DIRECTIONAL_PCF7",
     };
 
+    static string[] cascadeBlendKeywords = {
+        "_CASCADE_BLEND_SOFT",
+        "_CASCADE_BLEND_DITHER"
+    };
+
     struct ShadowedDirectionalLight
     {
         public int visibleLightIndex;
@@ -96,7 +101,6 @@ public class Shadows
     {
         int atlasSize = (int)settings.directional.atlasSize;
 
-
         // 获得渲染纹理
         buffer.GetTemporaryRT(
             dirShadowAtlasId, atlasSize, atlasSize,
@@ -140,7 +144,13 @@ public class Shadows
             )
         );
 
-        SetKeywords();
+        SetKeywords(
+            directionalFilterKeywords, (int)settings.directional.filter - 1
+        );
+        SetKeywords(
+            cascadeBlendKeywords, (int)settings.directional.cascadeBlend - 1
+        );
+
         buffer.SetGlobalVector(
             shadowAtlasSizeId, new Vector4(atlasSize, 1f / atlasSize)
         );
@@ -148,18 +158,17 @@ public class Shadows
         ExecuteBuffer();
     }
 
-    void SetKeywords()
+    void SetKeywords(string[] keywords, int enabledIndex)
     {
-        int enabledIndex = (int)settings.directional.filter - 1;
-        for (int i = 0; i < directionalFilterKeywords.Length; i++)
+        for (int i = 0; i < keywords.Length; i++)
         {
             if (i == enabledIndex)
             {
-                buffer.EnableShaderKeyword(directionalFilterKeywords[i]);
+                buffer.EnableShaderKeyword(keywords[i]);
             }
             else
             {
-                buffer.DisableShaderKeyword(directionalFilterKeywords[i]);
+                buffer.DisableShaderKeyword(keywords[i]);
             }
         }
     }
@@ -190,10 +199,6 @@ public class Shadows
         return m;
     }
 
-    void SetTileViewport(int index, int split)
-    {
-        Vector2 offset = new Vector2(index % split, index / split);
-    }
     Vector2 SetTileViewport(int index, int split, float tileSize)
     {
         Vector2 offset = new Vector2(index % split, index / split);
@@ -208,7 +213,9 @@ public class Shadows
         float texelSize = 2f * cullingSphere.w / tileSize;
         float filterSize = texelSize * ((float)settings.directional.filter + 1f);
 
+        cullingSphere.w -= filterSize;
         cullingSphere.w *= cullingSphere.w;
+
         cascadeCullingSpheres[index] = cullingSphere;
         //cascadeData[index].x = 1f / cullingSphere.w;
         cascadeData[index] = new Vector4(
@@ -216,10 +223,6 @@ public class Shadows
             filterSize * 1.4142136f
         );
 
-        cullingSphere.w -= filterSize;
-        cullingSphere.w *= cullingSphere.w;
-
-        cascadeCullingSpheres[index] = cullingSphere;
     }
 
     // 渲染阴影
