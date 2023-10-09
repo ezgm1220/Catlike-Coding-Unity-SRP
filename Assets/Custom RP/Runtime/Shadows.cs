@@ -23,6 +23,7 @@ public class Shadows
     struct ShadowedDirectionalLight
     {
         public int visibleLightIndex;
+        public float slopeScaleBias;
     }
 
     int ShadowedDirectionalLightCount;// 记录阴影灯光数量
@@ -35,16 +36,18 @@ public class Shadows
         dirShadowMatricesId = Shader.PropertyToID("_DirectionalShadowMatrices"),
         cascadeCountId = Shader.PropertyToID("_CascadeCount"),
         cascadeCullingSpheresId = Shader.PropertyToID("_CascadeCullingSpheres"),
+        cascadeDataId = Shader.PropertyToID("_CascadeData"),// 传递级联数据
         //shadowDistanceId = Shader.PropertyToID("_ShadowDistance");
         // 使用渐变距离
         shadowDistanceFadeId = Shader.PropertyToID("_ShadowDistanceFade");
 
-    static Vector4[] cascadeCullingSpheres = new Vector4[maxCascades];
+    static Vector4[] cascadeCullingSpheres = new Vector4[maxCascades],
+        cascadeData = new Vector4[maxCascades];
 
     static Matrix4x4[]// 阴影的变换矩阵
         dirShadowMatrices = new Matrix4x4[maxShadowedDirectionalLightCount];
 
-    public Vector2 ReserveDirectionalShadows(Light light, int visibleLightIndex)// 返回阴影贴图的偏移位置 
+    public Vector3 ReserveDirectionalShadows(Light light, int visibleLightIndex)// 返回阴影贴图的偏移位置 
     {
         if (ShadowedDirectionalLightCount < maxShadowedDirectionalLightCount && // 数量不超过最大数量
             light.shadows != LightShadows.None && light.shadowStrength > 0f &&// 阴影模式不为无且阴影强度大于零
@@ -53,14 +56,16 @@ public class Shadows
             ShadowedDirectionalLights[ShadowedDirectionalLightCount] =
                 new ShadowedDirectionalLight
                 {
-                    visibleLightIndex = visibleLightIndex
+                    visibleLightIndex = visibleLightIndex,
+                    slopeScaleBias = light.shadowBias
                 };
-            return new Vector2(
+            return new Vector3(
                 light.shadowStrength,
-                settings.directional.cascadeCount * ShadowedDirectionalLightCount++
+                settings.directional.cascadeCount * ShadowedDirectionalLightCount++,
+                light.shadowNormalBias
             );
         }
-        return Vector2.zero;
+        return Vector3.zero;
     }
 
     public void Render()
@@ -112,6 +117,7 @@ public class Shadows
         buffer.SetGlobalVectorArray(
             cascadeCullingSpheresId, cascadeCullingSpheres
         );
+        buffer.SetGlobalVectorArray(cascadeDataId, cascadeData);
 
         // 设置全局矩阵数组
         buffer.SetGlobalMatrixArray(dirShadowMatricesId, dirShadowMatrices);
@@ -168,6 +174,20 @@ public class Shadows
         return offset;
     }
 
+    void SetCascadeData(int index, Vector4 cullingSphere, float tileSize)
+    {
+        float texelSize = 2f * cullingSphere.w / tileSize;
+        cullingSphere.w *= cullingSphere.w;
+        cascadeCullingSpheres[index] = cullingSphere;
+        //cascadeData[index].x = 1f / cullingSphere.w;
+        cascadeData[index] = new Vector4(
+            1f / cullingSphere.w,
+            texelSize * 1.4142136f
+        );
+        cullingSphere.w *= cullingSphere.w;
+        cascadeCullingSpheres[index] = cullingSphere;
+    }
+
     // 渲染阴影
     void RenderDirectionalShadows(int index, int split, int tileSize)
     {
@@ -191,11 +211,9 @@ public class Shadows
 
             shadowSettings.splitData = splitData;
 
-            if (index == 0)// 记录记录级联剔除球,只记录一个光源的即可(因为公用)
+            if (index == 0)// 记录记录级联数据,只记录一个光源的即可(因为公用)
             {
-                Vector4 cullingSphere = splitData.cullingSphere;
-                cullingSphere.w *= cullingSphere.w;
-                cascadeCullingSpheres[i] = cullingSphere;
+                SetCascadeData(i, splitData.cullingSphere, tileSize);
             }
 
             int tileIndex = tileOffset + i;
@@ -204,8 +222,10 @@ public class Shadows
                 SetTileViewport(tileIndex, split, tileSize), split
             );
             buffer.SetViewProjectionMatrices(viewMatrix, projectionMatrix);
+            buffer.SetGlobalDepthBias(0f, light.slopeScaleBias);
             ExecuteBuffer();
             context.DrawShadows(ref shadowSettings);
+            buffer.SetGlobalDepthBias(0f, 0f);
         }
 
     }

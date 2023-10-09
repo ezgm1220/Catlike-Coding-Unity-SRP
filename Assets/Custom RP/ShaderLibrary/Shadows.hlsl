@@ -7,6 +7,7 @@
 CBUFFER_START(_CustomShadows)
 	int _CascadeCount;
 	float4 _CascadeCullingSpheres[MAX_CASCADE_COUNT];
+	float4 _CascadeData[MAX_CASCADE_COUNT];
 	float4x4 _DirectionalShadowMatrices[MAX_SHADOWED_DIRECTIONAL_LIGHT_COUNT * MAX_CASCADE_COUNT];
 	//float _ShadowDistance;
 	float4 _ShadowDistanceFade;
@@ -19,6 +20,7 @@ SAMPLER_CMP(SHADOW_SAMPLER);
 struct DirectionalShadowData {
 	float strength; // 强度
 	int tileIndex;	// 索引id
+	float normalBias;
 };
 
 struct ShadowData {
@@ -43,8 +45,8 @@ ShadowData GetShadowData (Surface surfaceWS) {
 		float distanceSqr = DistanceSquared(surfaceWS.position, sphere.xyz);
 		if (distanceSqr < sphere.w) {
 			if (i == _CascadeCount - 1) {// 当位于最后一个级联时执行级联渐变
-				data.strength *= FadedShadowStrength(
-					distanceSqr, 1.0 / sphere.w, _ShadowDistanceFade.z
+				data.strength *= FadedShadowStrength(// 使用新的预先计算的逆函数
+					distanceSqr, _CascadeData[i].x, _ShadowDistanceFade.z
 				);
 			}
 			break;
@@ -69,20 +71,24 @@ float SampleDirectionalShadowAtlas (float3 positionSTS) {
 }
 
 // 获得阴影采样的值
-float GetDirectionalShadowAttenuation (DirectionalShadowData data, Surface surfaceWS) {
-	
-	if (data.strength <= 0.0) {
+float GetDirectionalShadowAttenuation (
+	DirectionalShadowData directional, ShadowData global, Surface surfaceWS)
+{
+	if (directional.strength <= 0.0) {
 		return 1.0;
 	}
-	
+
+	float3 normalBias = surfaceWS.normal *
+		(directional.normalBias * _CascadeData[global.cascadeIndex].y);
+
 	float3 positionSTS = mul(
-		_DirectionalShadowMatrices[data.tileIndex],
-		float4(surfaceWS.position, 1.0)
+		_DirectionalShadowMatrices[directional.tileIndex],
+		float4(surfaceWS.position + normalBias, 1.0)
 	).xyz;
 
 	float shadow = SampleDirectionalShadowAtlas(positionSTS);
 
-	return lerp(1.0, shadow, data.strength);
+	return lerp(1.0, shadow, directional.strength);
 }
 
 #endif
