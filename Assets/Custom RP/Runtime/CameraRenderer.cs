@@ -64,7 +64,9 @@ public partial class CameraRenderer
             // 设置对应的渲染方式
             enableDynamicBatching = useDynamicBatching,
             enableInstancing = useGPUInstancing,
-            perObjectData = PerObjectData.Lightmaps // 设置光照贴图
+            perObjectData =
+                PerObjectData.Lightmaps | PerObjectData.LightProbe |// 设置光照贴图和光照探针
+                PerObjectData.LightProbeProxyVolume// 设置LPPV
         };
         drawingSettings.SetShaderPassName(1, litShaderTagId);
 
